@@ -1,3 +1,29 @@
+from tkinter import *
+from tkinter import messagebox
+import winsound
+
+class Personnage:
+    def __init__(self, name, playerID, nbBombs):
+        self.name = name
+        self.playerID = playerID
+        self.nbBombs = 4
+
+def bouton_entree(event):
+    #tr
+    print("enter")
+
+def bouton_up(event):
+    print("up")
+
+def bouton_down(event):
+    print("down")
+
+def bouton_right(event):
+    print("right")
+
+def bouton_left(event):
+    print("left")
+
 def callback():
     if messagebox.askokcancel("Quit", "Voulez-vous vraiment quitter ?"):
         window.destroy()
