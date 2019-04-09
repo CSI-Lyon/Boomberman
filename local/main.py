@@ -36,6 +36,7 @@ def main():
     window.title("Boomberman")
     window.geometry("1280x700")
     window.resizable(False, False)
+    window.iconbitmap('Bomberman-icon.ico')
 
     window.protocol("WM_DELETE_WINDOW", callback)
 
