@@ -44,6 +44,13 @@ def main():
     window.bind("<Down>",bouton_down)
     window.bind("<Right>",bouton_right)
     window.bind("<Left>",bouton_left)
+
+    main_canvas = Canvas(window, bg="white", width = 1280, height = 700)
+    main_canvas.grid(row = 0, column = 0)
+
+    imageBG = PhotoImage(file = "background.png")
+    main_canvas.create_image(1280/2, 700/2, image = imageBG)
+
     window.mainloop()
 
 
