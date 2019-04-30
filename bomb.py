@@ -1,4 +1,5 @@
 from threading import Thread, RLock
+from main import *
 import time
 
 lock = RLock()
@@ -65,16 +66,13 @@ class BombPutting(Thread):
             else:
                 break
 
-def putBomb(x, y): #def putBomb(event)
-    #x = player.getX()
-    #y = player.getY()
-
-    threadBomb = BombPutting(x, y)
+def putBomb(event): #def putBomb(event)
+    threadBomb = BombPutting(Personnage1.positionX, Personnage1.positionX)
     
     threadBomb.start()
 
     threadBomb.join()
-
+"""
 def main():
     global mapp
     mapp = [
@@ -95,3 +93,4 @@ def main():
     putBomb(x, y)
 
 main()
+"""
