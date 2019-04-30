@@ -1,5 +1,5 @@
 from threading import Thread, RLock
-from main import *
+import main
 import time
 
 lock = RLock()
@@ -12,7 +12,7 @@ class BombPutting(Thread):
         self.y = y
 
     def run(self):
-        global mapp, scope
+        global scope, mapp
         
         with lock:
             for i in range(4):

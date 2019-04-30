@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+from bomb import *
 import winsound
 import time
 
@@ -12,6 +13,10 @@ fontColor = "#2A4B7C"
 etat = "menu principal"
 tableauBottom = [0] * 10
 tableauText = [0] * 10
+
+GRASS = 0
+PIERRE = 1
+BEDROCK = 2
 
 x1, y1 = screenX/1.3, screenY/2.8
 x4, y4 = screenX/1.3, screenY/1.17
@@ -31,6 +36,9 @@ bottomImageSelection2 = PhotoImage (file = "images/Bottom_exit_selection.png")
 bandeGauche = PhotoImage (file="images/blocs-et-objets/bande-gauche.png")
 bandeHaut = PhotoImage (file="images/blocs-et-objets/bande-haut.png")
 grass = PhotoImage (file = "images/blocs-et-objets/grass.png")
+pierre = PhotoImage(file="images/blocs-et-objets/bloc-pierre.png")
+bedrock = PhotoImage(file="images/blocs-et-objets/bloc-bedrock.png")
+
 #joueurs
 joueur1_face = PhotoImage(file="images/personnages/Player1_face.png")
 
@@ -42,7 +50,7 @@ score
 jeu
 """
 
-class Personnage:
+class Player:
     def __init__(self, name, playerID, imageID, nbBombs, positionX, positionY):
         self.name = name
         self.playerID = playerID
@@ -77,9 +85,6 @@ def bouton_left(event):
 
 def bottom(event):
 
-
-
-    
     global etat
     if etat == "menu principal":
         if event.x > (screenX/1.3 - 188) and event.x < (screenX/1.3 + 188) and event.y > (screenY/2.8 - 33) and event.y < (screenY/2.8 + 33):
@@ -172,7 +177,7 @@ def callback():
 def jeu(mode):
     global jeuCanvas
     global xMin, xMax, yMin, yMax, xGrilleTaille, yGrilleTaille
-    global Personnage1
+    global Personnage1, mmap
     nouvellePartieCanvas.destroy()
     
     winsound.PlaySound(None, winsound.SND_ASYNC)
@@ -208,17 +213,22 @@ def jeu(mode):
         contenu = grille.read()
         cases = contenu.split()
         caseDébut = 0
+        mmap = [[0] * 19 for _ in range(11)]
         for y in range(11):
             for x in range(19):
                 if cases[caseDébut] == 't':
                     jeuCanvas.create_image(xGilleMin + x*35 + 35/2 + 1, yGilleMin + y*35 + 35/2 + 1, image = grass)
                 elif cases[caseDébut] == 't+j1':
                     jeuCanvas.create_image(xGilleMin + x*35 + 35/2 + 1, yGilleMin + y*35 + 35/2 + 1, image = grass)
-                    Personnage1 = Personnage("Mateusz", 1, 0, 10, x, y)
+                    Personnage1 = Player("Mateusz", 1, 0, 10, x, y)
                 caseDébut+=1
         Personnage1.imageID = jeuCanvas.create_image(xGilleMin + Personnage1.positionX*35 + 35/2 + 1, yGilleMin + Personnage1.positionY*35 + 35/2 + 1, image = joueur1_face)
         
         print(cases)
+
+        window.bind("<space>", putBomb)
+
+
 
 def nouvelle_partie():
     global nouvellePartieCanvas
