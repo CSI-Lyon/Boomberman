@@ -19,7 +19,6 @@ def keyPressed(event, canvas):
 
     if key == "Up":
         canvas.move(player.IDimage, 0, -35)
-        print("up")
     elif key == "Down":
         canvas.move(player.IDimage, 0, +35)
 
@@ -29,9 +28,8 @@ def keyPressed(event, canvas):
         canvas.move(player.IDimage, -35, 0)
 
 
-def render(canvas):
+def render(window, canvas):
     global player
-    print("OK")
 
     casesID = [[0] * 19 for i in range(11)]
     for y in range(11):
@@ -55,15 +53,13 @@ def render(canvas):
     player.IDimage = canvas.create_image(xGridMin + player.posX*35 + 35/2 + 1, yGridMin + player.posX*35 + 35/2 + 1, image = imgJ1)
     print(player.IDimage, player.posX, player.posY)
 
-def run(canvas, screenX, screenY, mode):
+    window.mainloop()
+
+def run(window, canvas, screenX, screenY, mode):
     # == Importation des images == #
     background = Image("", "background")
     left_band = Image("decor", "left_band")
     up_band = Image("decor", "up_band")
-
-    #window.bind("<Button-1>")
-    #window.bind("<Return>", bouton_entree)
-
 
     #winsound.PlaySound(None, winsound.SND_ASYNC)
     #winsound.PlaySound("son/02 One Above All.wav", winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
@@ -87,12 +83,11 @@ def run(canvas, screenX, screenY, mode):
     xGridMax = (screenX - (screenX - xMax))
     yGridMin = (screenY - (screenY - yMin)) + 80
     yGridMax = (screenY - (screenY - yMax))
+
     #taille de la grille
     xLenGrid = xGridMax - xGridMin
     yLenGrid = yGridMax - yGridMin
 
     map.load() # Chargement de la map
 
-    render(canvas)
-    pass
-    #window.mainloop()
+    render(window, canvas)
