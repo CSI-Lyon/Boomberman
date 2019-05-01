@@ -5,3 +5,9 @@ decoding = {
 
 def decode(ID):
     return decoding[ID]
+
+def encode(name):
+    for key, value in decoding.items():
+        if value == name:
+            return key
+            break
