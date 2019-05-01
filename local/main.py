@@ -1,22 +1,23 @@
 from tkinter import *
 from tkinter import messagebox
-from bomb import *
-import winsound
+#import winsound
 import time
+
+import gamer
+
+from Image import *
 
 
 screenX = 1280
 screenY = 700
+
 fontSize = 25
 fontName = "Bauhaus 93"
 fontColor = "#2A4B7C"
+
 etat = "menu principal"
 tableauBottom = [0] * 10
 tableauText = [0] * 10
-
-GRASS = 0
-PIERRE = 1
-BEDROCK = 2
 
 x1, y1 = screenX/1.3, screenY/2.8
 x4, y4 = screenX/1.3, screenY/1.17
@@ -25,66 +26,19 @@ x4, y4 = screenX/1.3, screenY/1.17
 window = Tk()
 
 #importation des images 
-logo = PhotoImage(file = "images/Boomberman.png")
-imageBG = PhotoImage(file = "images/background.png")
-imageFondTitre = PhotoImage (file = "images/titre.png")
-bottomImage = PhotoImage(file = "images/Bottom.png")
-bottomImage2 = PhotoImage (file = "images/Bottom_exit.png")
-bottomImageSelection = PhotoImage (file = "images/Bottom_selection.png")
-bottomImageSelection2 = PhotoImage (file = "images/Bottom_exit_selection.png")
-#partie 'jeu'
-bandeGauche = PhotoImage (file="images/blocs-et-objets/bande-gauche.png")
-bandeHaut = PhotoImage (file="images/blocs-et-objets/bande-haut.png")
-grass = PhotoImage (file = "images/blocs-et-objets/grass.png")
-pierre = PhotoImage(file="images/blocs-et-objets/bloc-pierre.png")
-bedrock = PhotoImage(file="images/blocs-et-objets/bloc-bedrock.png")
-
-#joueurs
-joueur1_face = PhotoImage(file="images/personnages/Player1_face.png")
-
-"""
-menu_principale
-nouvelle_partie
-paramètres
-score
-jeu
-"""
-
-class Player:
-    def __init__(self, name, playerID, imageID, nbBombs, positionX, positionY):
-        self.name = name
-        self.playerID = playerID
-        self.imageID = imageID
-        self.nbBombs = 4
-        self.positionX = positionX
-        self.positionY = positionY
-
-def bouton_entree(event):
-    print("enter")
-    
-
-def bouton_up(event):
-    if etat == "jeu":
-        jeuCanvas.move(Personnage1.imageID,0,-35)
-    print("up")
-
-def bouton_down(event):
-    if etat == "jeu":
-        jeuCanvas.move(Personnage1.imageID,0,35)
-    print("down")
-
-def bouton_right(event):
-    if etat == "jeu":
-        jeuCanvas.move(Personnage1.imageID,35,0)
-    print("right")
-
-def bouton_left(event):
-    if etat == "jeu":
-        jeuCanvas.move(Personnage1.imageID,-35,0)
-    print("left")
+logo = Image("", "logo")
+imageBG = Image("", "background")
+imageFondTitre = PhotoImage (file = "images/title.png")
+bottomImage = PhotoImage(file = "images/button.png")
+bottomImage2 = PhotoImage (file = "images/exit_button.png")
+bottomImageSelection = PhotoImage (file = "images/selected_button.png")
+bottomImageSelection2 = PhotoImage (file = "images/selected_exit_button.png")
 
 def bottom(event):
 
+
+
+    
     global etat
     if etat == "menu principal":
         if event.x > (screenX/1.3 - 188) and event.x < (screenX/1.3 + 188) and event.y > (screenY/2.8 - 33) and event.y < (screenY/2.8 + 33):
@@ -167,7 +121,7 @@ def mode_developpeur(event):
 def callback():
     if messagebox.askokcancel("Quit", "Voulez-vous vraiment quitter le jeu?"):
         window.destroy()
-        winsound.PlaySound(None, winsound.SND_ASYNC)
+        #winsound.PlaySound(None, winsound.SND_ASYNC)
     else:
         try:
             bottom_remove_bleu1(1, text="Quitter", x = screenX/1.3, y = screenY/1.17, boutonID = 3, image = 1)
@@ -175,60 +129,13 @@ def callback():
             print()
 
 def jeu(mode):
-    global jeuCanvas
-    global xMin, xMax, yMin, yMax, xGrilleTaille, yGrilleTaille
-    global Personnage1, mmap
     nouvellePartieCanvas.destroy()
+    mode = 1
     
-    winsound.PlaySound(None, winsound.SND_ASYNC)
+    #winsound.PlaySound(None, winsound.SND_ASYNC)
     #winsound.PlaySound("son/02 One Above All.wav", winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
 
-    jeuCanvas = Canvas(window, bg="white", width = screenX, height = screenY, cursor="none")
-    jeuCanvas.grid(row = 0, column = 0)
-    
-    jeuCanvas.create_image(screenX/2, screenY/2, image = imageBG)
-    xMin = screenX/2 - screenX/3
-    xMax = screenX/2 + screenX/3
-    yMin = screenY/2 - screenY/3
-    yMax = screenY/2 + screenY/3
-
-    window.bind("<Control-Alt-Shift-D>", mode_developpeur)
-    
-    grilleJeu = jeuCanvas.create_rectangle(xMin,yMin, xMax,yMax, width =2, fill='white')
-
-
-    jeuCanvas.create_image( xMin + screenX/13, screenY/2 +1, image = bandeGauche)
-    jeuCanvas.create_image( screenX/2 -1, yMin + screenY/17.5, image = bandeHaut)
-
-    xGilleMin = (screenX - (screenX - xMin)) + 187 #taille en pixels de l'image
-    xGilleMax = (screenX - (screenX - xMax))
-    yGilleMin = (screenY - (screenY - yMin)) + 80 #taille en pixels de l'image
-    yGilleMax = (screenY - (screenY - yMax))
-
-    xGrilleTaille = xGilleMax - xGilleMin
-    yGrilleTaille = yGilleMax - yGilleMin
-
-    if mode == "un joueur":
-        grille = open("grilles/1.txt", "r")
-        contenu = grille.read()
-        cases = contenu.split()
-        caseDébut = 0
-        mmap = [[0] * 19 for _ in range(11)]
-        for y in range(11):
-            for x in range(19):
-                if cases[caseDébut] == 't':
-                    jeuCanvas.create_image(xGilleMin + x*35 + 35/2 + 1, yGilleMin + y*35 + 35/2 + 1, image = grass)
-                elif cases[caseDébut] == 't+j1':
-                    jeuCanvas.create_image(xGilleMin + x*35 + 35/2 + 1, yGilleMin + y*35 + 35/2 + 1, image = grass)
-                    Personnage1 = Player("Mateusz", 1, 0, 10, x, y)
-                caseDébut+=1
-        Personnage1.imageID = jeuCanvas.create_image(xGilleMin + Personnage1.positionX*35 + 35/2 + 1, yGilleMin + Personnage1.positionY*35 + 35/2 + 1, image = joueur1_face)
-        
-        print(cases)
-
-        window.bind("<space>", putBomb)
-
-
+    gamer.run(window, screenX, screenY, mode)
 
 def nouvelle_partie():
     global nouvellePartieCanvas
@@ -302,11 +209,6 @@ def main():
     window.protocol("WM_DELETE_WINDOW", callback)
 
     #Récupération des différentes touches
-    window.bind("<Return>", bouton_entree)
-    window.bind("<Up>",bouton_up)
-    window.bind("<Down>",bouton_down)
-    window.bind("<Right>",bouton_right)
-    window.bind("<Left>",bouton_left)
     window.bind("<Button-1>", bottom)
 
     menu_principal()
