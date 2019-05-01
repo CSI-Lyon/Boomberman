@@ -12,27 +12,36 @@ def keyPressed(event):
 
     key = event.keysym # Récupération de la touche
     imgID = map.get(player.getPosX(), player.getPosY()).getID()
+    print(imgID)
     canvas.delete(imgID)
 
     player.go(key) # Déplacement du joueur
 
-    canvas.move(imgID, +35, 0)
-
 def render():
     global grid, canvas, xGridMin, yGridMin
-    print("OK")
 
     for y in range(11):
         for x in range(19):
-            case = map.get(x, y)
+            img = Image("blocks", "grass")
+            canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img)
 
-            if case == "GRASS" or case == "BEDROCK":
-                img = Image("blocks", case)
-            else:
-                img = Image("skins/1", "down")
+            case = map.get(x, y)
+            if case != "GRASS":
+                if case == "STONE" or img == "BEDROCK":
+                    img = Image("blocks", img)
+                else:
+                    global player
+                    player = Player(1, "Test")
+                    img = Image("skins/{}".format(encode(case)), "down")
+
+                canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img)
 
             map.put(x, y, img)
-            canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img)
+
+    for y in range(11):
+        for x in range(19):
+            print(map.grid[y][x], end=" ")
+        print()
 
 def run(window, screenX, screenY, mode):
     # == Importation des images == #
@@ -63,8 +72,8 @@ def run(window, screenX, screenY, mode):
 
     gameGrid = canvas.create_rectangle(xMin,yMin, xMax,yMax, width=2, fill='white')
 
-    canvas.create_image( xMin + screenX/13, screenY/2 +1, image = left_band)
-    canvas.create_image( screenX/2 -1, yMin + screenY/17.5, image = up_band)
+    canvas.create_image(xMin + screenX/13, screenY/2 +1, image = left_band)
+    canvas.create_image(screenX/2 -1, yMin + screenY/17.5, image = up_band)
 
     global xGridMin, yGridMin
     xGridMin = (screenX - (screenX - xMin)) + 187
@@ -76,9 +85,6 @@ def run(window, screenX, screenY, mode):
     yLenGrid = yGridMax - yGridMin
 
     map.load() # Chargement de la map
-
-    global player
-    player = Player(1, "Juan")
 
     render()
 

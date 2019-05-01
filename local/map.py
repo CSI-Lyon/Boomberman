@@ -5,7 +5,7 @@ grid = []
 def load():
     global grid
     grid = open("grids/1.txt", "r").read().split("\n")
-
+    
     for y in range(11):
         grid[y] = grid[y].split(" ")
 
