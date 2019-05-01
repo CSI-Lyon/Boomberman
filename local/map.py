@@ -17,6 +17,6 @@ def get(x, y):
     global grid
     return grid[y][x]
 
-def put(x, y, id):
+def put(x, y, ID):
     global grid
-    grid[y][x] = id
+    grid[y][x] = ID
