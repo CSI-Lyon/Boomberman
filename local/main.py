@@ -35,7 +35,7 @@ bottomImageSelection = PhotoImage (file = "images/selected_button.png")
 bottomImageSelection2 = PhotoImage (file = "images/selected_exit_button.png")
 
 def bottom(event):
-    
+
     global etat
     if etat == "menu principal":
         if event.x > (screenX/1.3 - 188) and event.x < (screenX/1.3 + 188) and event.y > (screenY/2.8 - 33) and event.y < (screenY/2.8 + 33):
@@ -55,8 +55,6 @@ def bottom(event):
     elif etat == "jeu":
         #jeuCanvas.create_image(event.x, event.y, image = grass)
         pass
-
-    print(event.x, event.y)
 
 
 """
@@ -123,7 +121,7 @@ def callback():
         try:
             bottom_remove_bleu1(1, text="Quitter", x = screenX/1.3, y = screenY/1.17, boutonID = 3, image = 1)
         except:
-            print()
+            pass
 
 def jeu(mode):
     nouvellePartieCanvas.destroy()

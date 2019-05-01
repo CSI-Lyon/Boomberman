@@ -5,20 +5,33 @@ from Image import *
 
 from utils import *
 
+import map
+
 def keyPressed(event):
+    global player
+
     key = event.keysym # Récupération de la touche
+    imgID = map.get(player.getPosX(), player.getPosY()).getID()
+    canvas.delete(imgID)
 
     player.go(key) # Déplacement du joueur
 
-    img = Image("skins", key)
+    canvas.move(imgID, +35, 0)
 
 def render():
     global grid, canvas, xGridMin, yGridMin
+    print("OK")
+
     for y in range(11):
         for x in range(19):
-            case = grid[y][x]
-            img = Image("blocks",  case) # Récupération de l'image de la case
+            case = map.get(x, y)
 
+            if case == "GRASS" or case == "BEDROCK":
+                img = Image("blocks", case)
+            else:
+                img = Image("skins/1", "down")
+
+            map.put(x, y, img)
             canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img)
 
 def run(window, screenX, screenY, mode):
@@ -28,7 +41,7 @@ def run(window, screenX, screenY, mode):
     up_band = Image("decor", "up_band")
 
     #window.bind("<Button-1>")
-    window.bind("<Return>", bouton_entree)
+    #window.bind("<Return>", bouton_entree)
     window.bind("<Up>", lambda event: keyPressed(event))
     window.bind("<Right>", lambda event: keyPressed(event))
     window.bind("<Down>", lambda event: keyPressed(event))
@@ -62,16 +75,10 @@ def run(window, screenX, screenY, mode):
     xLenGrid = xGridMax - xGridMin
     yLenGrid = yGridMax - yGridMin
 
-    # == Découpage de la grille == #
-    global grid
-    grid = open("grids/1.txt", "r").read().split("\n")
+    map.load() # Chargement de la map
 
-    for y in range(11):
-        grid[y] = grid[y].split(" ")
-
-    for y in range(11):
-        for x in range(19):
-            grid[y][x] = decode(int(grid[y][x]))
+    global player
+    player = Player(1, "Juan")
 
     render()
 

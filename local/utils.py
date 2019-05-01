@@ -1,5 +1,6 @@
 decoding = {
-    0 : "GRASS"
+    0 : "GRASS",
+    1 : "PLAYER_1"
 }
 
 def decode(ID):
