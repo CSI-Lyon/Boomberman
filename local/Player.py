@@ -2,15 +2,14 @@ from Image import *
 
 class Player():
 
-    def __init__(self, ID, name):
+    def __init__(self, ID, name, imageID, posX, posY):
         self.ID = ID
         self.name = name
-        self.image = Image("skins/{}".format(ID), "down")
+        self.imageID = imageID
+        self.posX = posX
+        self.posY = posY
 
         self.nbBombs = 1
-
-        self.posX = 1
-        self.posY = 1
 
     def getPosX(self):
         return self.posX
