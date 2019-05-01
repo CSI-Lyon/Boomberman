@@ -1,10 +1,14 @@
 from utils import *
 
+
 grid = []
+grid2 = []
 
 def load():
     global grid
-    grid = open("grids/1.txt", "r").read().split("\n")
+    file = open("grids/1.txt", "r")
+    grid = file.read().split("\n")
+    file.close()
     
     for y in range(11):
         grid[y] = grid[y].split(" ")
@@ -13,9 +17,22 @@ def load():
         for x in range(19):
             grid[y][x] = decode(int(grid[y][x]))
 
+def load2():
+    global grid2
+    grid2 = open("grids/1.txt", "r").read().split("\n")
+    
+    for y in range(11):
+        grid2[y] = grid2[y].split(" ")
+
 def get(x, y):
-    global grid
     return grid[y][x]
+
+def get2(x, y):
+    return grid2[y][x]
+
+def set2(x, y, value):
+    global grid2
+    grid2[x][y] = value
 
 def put(x, y, ID):
     global grid

@@ -5,7 +5,7 @@ from Image import *
 
 from utils import *
 import time
-
+import bombe
 import map
 
 def keyPressed(event, canvas):
@@ -15,17 +15,18 @@ def keyPressed(event, canvas):
     #imgID = map.get(player.getPosX(), player.getPosY()).getID()
     #canvas.delete(imgID)
 
-    player.go(key) # Déplacement du joueur
-
-    if key == "Up":
-        canvas.move(player.IDimage, 0, -35)
-    elif key == "Down":
-        canvas.move(player.IDimage, 0, +35)
-
-    elif key == "Right":
-        canvas.move(player.IDimage, +35, 0)
-    elif key == "Left":
-        canvas.move(player.IDimage, -35, 0)
+    player.go(key, canvas) # Déplacement du joueur
+    
+    #if key == "Up" and yGridMin <= canvas.coords(player.IDimage)[1] - 35:
+    #    print(player.posX, player.posY-1, map.get2(player.posX, player.posY-1))
+    #    if map.get2(player.posX, player.posY-1) == 0:
+            
+    #elif key == "Down" and yGridMax >= canvas.coords(player.IDimage)[1] + 35:
+        
+    #elif key == "Right" and xGridMax >= canvas.coords(player.IDimage)[0] + 35:
+       
+    #elif key == "Left" and xGridMin <= canvas.coords(player.IDimage)[0] -35:
+        
 
 
 def render(window, canvas):
@@ -39,7 +40,7 @@ def render(window, canvas):
 
             case = map.get(x, y)
 
-            if case == "GRASS" or case == "BEDROCK":
+            if case == "GRASS" or case == "bedrock" or case == "stone":
                 img = Image("blocks", case)
             elif case == "GRASS+PLAYER_1":
                 img = Image("blocks", "GRASS")
@@ -51,7 +52,7 @@ def render(window, canvas):
 
 
     player.IDimage = canvas.create_image(xGridMin + player.posX*35 + 35/2 + 1, yGridMin + player.posX*35 + 35/2 + 1, image = imgJ1)
-    print(player.IDimage, player.posX, player.posY)
+    window.bind("<space>", lambda event: bombe.putBomb(event, player, canvas, xGridMin, yGridMin))
 
     window.mainloop()
 
@@ -78,7 +79,7 @@ def run(window, canvas, screenX, screenY, mode):
     canvas.create_image( screenX/2 -1, yMin + screenY/17.5, image = up_band)
 
     #coordonnées des bords de la grille de jeu jouable
-    global xGridMin, yGridMin
+    global xGridMin, yGridMin, xGridMax, yGridMax
     xGridMin = (screenX - (screenX - xMin)) + 187
     xGridMax = (screenX - (screenX - xMax))
     yGridMin = (screenY - (screenY - yMin)) + 80
@@ -89,5 +90,6 @@ def run(window, canvas, screenX, screenY, mode):
     yLenGrid = yGridMax - yGridMin
 
     map.load() # Chargement de la map
+    map.load2() #2eme tableau de la map
 
     render(window, canvas)
