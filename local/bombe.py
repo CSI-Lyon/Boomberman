@@ -47,25 +47,31 @@ class BombPutting(Thread):
                     map.set2(self.x, i, 0)
                     self.canvas.delete(self.casesID[i][self.x])
                     break
+                else:
+                    break
             else:
                 break
         #Droite
         for i in range(self.x+1, self.x+scope+2): #Ici, il faut remplacer scope par player.getScope()
             if i <= 18:
-                case = map.get2(i, self.y)
+                case = int( map.get2(i, self.y) )
                 if case != 0 and case != 2:
                     map.set2(i, self.y, 0)
                     self.canvas.delete(self.casesID[self.y][i])
+                    break
+                else:
                     break
             else:
                 break
         #Bas
         for i in range(self.y+1, self.y+scope+2): #Ici, il faut remplacer scope par player.getScope()
             if i <= 18:
-                case = map.get2(self.x, i)
+                case = int( map.get2(self.x, i) )
                 if case != 0 and case != 2:
                     map.set2(self.x,i, 0)
                     self.canvas.delete(self.casesID[i][self.x])
+                    break
+                else:
                     break
             else:
                 break
@@ -73,10 +79,12 @@ class BombPutting(Thread):
         #Gauche
         for i in range(self.x-1, self.x-scope-2, -1): #Ici, il faut remplacer scope par player.getScope()
             if i >= 0:
-                case = map.get2(i, self.y)
+                case = int( map.get2(i, self.y) )
                 if case != 0 and case != 2:
                     map.set2(i, self.y, 0)
                     self.canvas.delete(self.casesID[self.y][i])
+                    break
+                else:
                     break
             else:
                 break

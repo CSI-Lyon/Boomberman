@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 #import winsound
+import pdb
 import time
 
 import game
@@ -50,7 +51,7 @@ def bottom(event):
     elif etat == "nouvelle partie":
         if event.x > screenX/2 - 188 and event.x < screenX/2 + 188 and event.y > screenY/1.8 - 33 and event.y < screenY/1.8 + 33:
             etat = "jeu"
-            jeu("un joueur")
+            print("jeu", jeu("un joueur"))
         elif event.x > screenX/4.5 - 188 and event.x < screenX/4.5 + 188 and event.y > screenY/1.17 - 33 and event.y < screenY/1.17 + 33:
             etat = "menu principal"
             menu_principal()
@@ -146,7 +147,7 @@ def jeu(mode):
         #winsound.PlaySound(None, winsound.SND_ASYNC)
         #winsound.PlaySound("son/02 One Above All.wav", winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
 
-        canvas = Canvas(window, bg="white", width = screenX, height = screenY, cursor="none")
+        canvas = Canvas(window, bg="white", width = screenX, height = screenY)# cursor="none"
         canvas.grid(row = 0, column = 0)
 
         window.bind("<Up>", lambda event: game.keyPressed(event, canvas))
@@ -155,10 +156,17 @@ def jeu(mode):
         window.bind("<Left>", lambda event: game.keyPressed(event, canvas))
 
         game.run(window, canvas, screenX, screenY, mode)
+        print("fin function jeu")
+        #pdb.set_trace()
+    return 0
 
 def nouvelle_partie():
     global nouvellePartieCanvas
-    main_canvas.destroy()
+    try:
+        main_canvas.destroy()
+        canvas.destroy()
+    except:
+        pass
 
     #création de canvas
     nouvellePartieCanvas = Canvas(window, bg="white", width = screenX, height = screenY)
@@ -179,7 +187,7 @@ def nouvelle_partie():
     nouvellePartieCanvas.create_text (screenX/2, screenY/1.8, font=(fontName, fontSize), text='Un joueur', fill=fontColor)
     nouvellePartieCanvas.create_text (screenX/2, screenY/1.45, font=(fontName, fontSize), text='Multijoueur', fill=fontColor)
     nouvellePartieCanvas.create_text (screenX/4.5, screenY/1.17, font=(fontName, fontSize), text='<---- Retour', fill=fontColor)
-
+ 
     #si on passe avec la sourie sur les boutons, alors la fonction de sélection de mettra en place
     nouvellePartieCanvas.tag_bind(bottom5, "<Enter>", lambda event: bottom_bleu2(event, text="Un joueur", x = screenX/2, y = screenY/1.8, boutonID = 4, image = 0))
     nouvellePartieCanvas.tag_bind(bottom6, "<Enter>", lambda event: bottom_bleu2(event, text="Multijoueur", x = screenX/2, y = screenY/1.45, boutonID = 5, image = 0))

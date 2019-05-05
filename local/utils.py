@@ -2,7 +2,8 @@ decoding = {
     0 : "GRASS",
     1 : "stone",
     2 : "bedrock",
-    10 : "GRASS+PLAYER_1"
+    10 : "GRASS+PLAYER_1",
+    50 : "GRASS+GHOST"
 }
 
 def decode(ID):

@@ -1,4 +1,6 @@
 from Image import *
+from threading import Thread
+import time
 import map
 
 class Player():
@@ -18,27 +20,35 @@ class Player():
     def getPosY(self):
         return self.posY
 
-    def go(self, direction, canvas):
-        if direction == "Up" and self.posY >= 1:
-            case = map.get2(self.posX, self.posY-1)
-            if int(case) == 0 or int(case) == 10:
-                canvas.move(self.IDimage, 0, -35)
-                self.posY -= 1
+class Ennemi(Thread):
+    def __init__(self, imageID, posX, posY, alive):
+        Thread.__init__(self)
+        self.imageID = imageID
+        self.posX = posX
+        self.posY = posY
+        self.alive = alive
 
-        elif direction == "Down" and self.posY <= 9:
-            case = map.get2(self.posX, self.posY+1)
-            if int(case) == 0 or int(case) == 10:
-                canvas.move(self.IDimage, 0, +35)
-                self.posY += 1
-            
-        elif direction == "Right" and self.posX <= 17:
-            case = map.get2(self.posX+1, self.posY)
-            if int(case) == 0 or int(case) == 10:
-                canvas.move(self.IDimage, +35, 0)
-                self.posX += 1
+    def droite(self, g):
+        while (map.get2(self.posX, self.posY) == 0 or map.get2(self.posX, self.posY) == 50):
+            for i in range(5):
+                canvas.move(self.imageID, 7, 0)
+                time.sleep(1)
+            posX+=1
+        if self.alive == False:
+            return 0
+
+    def gauche(self,f):
+        while (map.get2(self.posX, self.posY) == 0 or map.get2(self.posX, self.posY) == 50):
+            for i in range(5):
+                canvas.move(self.imageID, -7, 0)
+                time.sleep(1)
+            posX-=1
+        if self.alive == False:
+            return 0
+
+    def run(self):
+        while self.alive == True:
+            self.gauche(self)
+            self.droite(self)
+
         
-        elif direction == "Left" and self.posX >= 1:
-            case = map.get2(self.posX-1, self.posY)
-            if int(case) == 0 or int(case) == 10:
-                canvas.move(self.IDimage, -35, 0)
-                self.posX -= 1

@@ -8,33 +8,57 @@ import time
 import bombe
 import map
 
+
+
 def keyPressed(event, canvas):
-    global player
+    global player,imgJ1
 
     key = event.keysym # Récupération de la touche
     #imgID = map.get(player.getPosX(), player.getPosY()).getID()
     #canvas.delete(imgID)
-
-    player.go(key, canvas) # Déplacement du joueur
+    case = -1
+    imgJ1 = Image("skins/1", "down")
+    canvas.itemconfig(player.IDimage, image = imgJ1)
     
-    #if key == "Up" and yGridMin <= canvas.coords(player.IDimage)[1] - 35:
-    #    print(player.posX, player.posY-1, map.get2(player.posX, player.posY-1))
-    #    if map.get2(player.posX, player.posY-1) == 0:
-            
-    #elif key == "Down" and yGridMax >= canvas.coords(player.IDimage)[1] + 35:
-        
-    #elif key == "Right" and xGridMax >= canvas.coords(player.IDimage)[0] + 35:
-       
-    #elif key == "Left" and xGridMin <= canvas.coords(player.IDimage)[0] -35:
-        
+    if key == "Up" and player.posY >= 1:
+        case = map.get2(player.posX, player.posY-1)
+        if int(case) == 0 or int(case) == 10:
+            imgJ1 = Image("skins/1", "up")
+            canvas.itemconfig(player.IDimage, image = imgJ1)
+            canvas.move(player.IDimage, 0, -35)
+            player.posY -= 1
 
+    elif key == "Down" and player.posY <= 9:
+        case = map.get2(player.posX, player.posY+1)
+        if int(case) == 0 or int(case) == 10:
+            imgJ1 = Image("skins/1", "down")
+            canvas.itemconfig(player.IDimage, image = imgJ1)
+            canvas.move(player.IDimage, 0, +35)
+            player.posY += 1
+        
+    elif key == "Right" and player.posX <= 17:
+        case = map.get2(player.posX+1, player.posY)
+        if int(case) == 0 or int(case) == 10:
+            imgJ1 = Image("skins/1", "right")
+            canvas.itemconfig(player.IDimage, image = imgJ1)
+            canvas.move(player.IDimage, +35, 0)
+            player.posX += 1
+    
+    elif key == "Left" and player.posX >= 1:
+        case = map.get2(player.posX-1, player.posY)
+        if int(case) == 0 or int(case) == 10:
+            imgJ1 = Image("skins/1", "left")
+            canvas.itemconfig(player.IDimage, image = imgJ1)
+            canvas.move(player.IDimage, -35, 0)
+            player.posX -= 1
+    print(player.IDimage, case)
 
 def render(window, canvas):
-    global player
+    global player,imgJ1, imgG
 
     casesID = [[0] * 19 for i in range(11)]
     img = Image("blocks", "grass")
-
+    ghosts = []
     for y in range(11):
         for x in range(19):
             canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img)
@@ -47,14 +71,24 @@ def render(window, canvas):
                 img2 = Image("blocks", "GRASS")
                 imgJ1 = Image("skins/1", "down")
                 player = Player(1, "Mateusz", 0, x, y)
-
+            elif case == "GRASS+GHOST":
+                img2 = Image("blocks", "GRASS")
+                imgG = Image("skins/ennemis", "ghost")
+                ghost = Ennemi(0, x, y, True)
+                ghosts.append(ghost)
             map.put(x, y, img2)
+            
             casesID[y][x] = canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img2)
 
-
-    player.IDimage = canvas.create_image(xGridMin + player.posX*35 + 35/2 + 1, yGridMin + player.posX*35 + 35/2 + 1, image = imgJ1)
+    
+    player.IDimage = canvas.create_image(xGridMin + player.posX*35 + 35/2 + 1, yGridMin + player.posY*35 + 35/2 + 1, image = imgJ1)
+   
+    for i in ghosts:   
+        i.imageID = canvas.create_image(xGridMin + i.posX*35 + 35/2 + 1, yGridMin + i.posY*35 + 35/2 + 1, image = imgG)
+        i.start()
+        print( i.posX,  i.posY)
     window.bind("<space>", lambda event: bombe.putBomb(event, player, canvas, xGridMin, yGridMin, casesID))
-
+    
     window.mainloop()
 
 def run(window, canvas, screenX, screenY, mode):
