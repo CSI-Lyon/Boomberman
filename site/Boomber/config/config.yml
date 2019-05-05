@@ -1,0 +1,11 @@
+debug_mode: true
+
+sql:
+   default:
+      host: localhost
+      dbname: bomber_db
+      username: root
+      password: root
+
+hook:
+   admin: admin
