@@ -7,14 +7,16 @@ import game
 
 from Image import *
 
-
+#taille de l'écran
 screenX = 1280
 screenY = 700
 
+#taille du texte
 fontSize = 25
 fontName = "Bauhaus 93"
 fontColor = "#2A4B7C"
 
+#variables nécessaires au logiciel
 etat = "menu principal"
 tableauBottom = [0] * 10
 tableauText = [0] * 10
@@ -36,13 +38,15 @@ bottomImageSelection2 = PhotoImage (file = "images/selected_exit_button.png")
 
 def bottom(event):
     global etat
+    #si on se trouve dans le menu pricipale et si on clic dans la zone correspondante du bouton, alors la fonction execute une autre
+    #fonction pour afficher un autre menu
     if etat == "menu principal":
         if event.x > (screenX/1.3 - 188) and event.x < (screenX/1.3 + 188) and event.y > (screenY/2.8 - 33) and event.y < (screenY/2.8 + 33):
             etat = "nouvelle partie"
             nouvelle_partie()
         elif event.x > x4 - 188 and event.x < x4 + 188 and event.y > y4 - 33 and event.y < y4 + 33:
             callback()
-
+    #męme principe, mais seulement si on se trouve dans le menu nouvelle partie
     elif etat == "nouvelle partie":
         if event.x > screenX/2 - 188 and event.x < screenX/2 + 188 and event.y > screenY/1.8 - 33 and event.y < screenY/1.8 + 33:
             etat = "jeu"
@@ -62,13 +66,18 @@ def bottom(event):
 Début des fonctions de sélection
 
 """
+#Męme principe de fonctionnement pour les deux 'types' - pour chaque canvas
 
 def bottom_bleu1(event, text, x, y, boutonID, image):
+    #Si c'est un bouton normal, alors remplacer l'image du bouton par une image sélectionné (en bleu)
     if image == 0:
         tableauBottom[boutonID] = main_canvas.create_image(x, y, image = bottomImageSelection)
+    #sinon si c'est un bouton quitter, alors le remplacer par une image sélectionné correspondant
     elif image == 1:
         tableauBottom[boutonID] = main_canvas.create_image(x, y, image = bottomImageSelection2)
+    #on rajoute le texte car l'image nouvellement créé cache le texte
     tableauText[boutonID] = main_canvas.create_text (x, y, font=(fontName, fontSize), text=text, fill=fontColor)
+    #si la sourie part du bouton, alors la fonction qui enlčve l'effet sélectionné disparait 
     main_canvas.tag_bind(tableauBottom[boutonID], "<Leave>", lambda event: bottom_remove_bleu1(event, text=text, x = x, y = y, boutonID = boutonID, image = image))
 
 def bottom_bleu2(event, text, x, y, boutonID, image):
@@ -82,11 +91,15 @@ def bottom_bleu2(event, text, x, y, boutonID, image):
 
 
 def bottom_remove_bleu1(event, text, x, y, boutonID, image):
+    #Si c'est un bouton normal, alors remplacer l'image du bouton par une image non sélectionné (normal)
     if image == 0:
         tableauBottom[boutonID] = main_canvas.create_image(x, y, image = bottomImage)
+    #sinon si c'est un bouton quitter, alors le remplacer par une image non sélectionné correspondante
     elif image == 1:
         tableauBottom[boutonID] = main_canvas.create_image(x, y, image = bottomImage2)
+    #rajout du texte
     tableauText[boutonID] = main_canvas.create_text (x, y, font=(fontName, fontSize), text=text, fill=fontColor)
+    #si on passe avec la sourie dans les objets nouvellement crées, alors l'effet selectionné s'affichera
     main_canvas.tag_bind(tableauBottom[boutonID], "<Enter>", lambda event: bottom_bleu1(event, text=text, x = x, y = y, boutonID = boutonID, image = image))
     main_canvas.tag_bind(tableauText[boutonID], "<Enter>", lambda event: bottom_bleu1(event, text=text, x = x, y = y, boutonID = boutonID, image = image))
 
@@ -112,16 +125,17 @@ def mode_developpeur(event):
     window.title("Boomberman - Mode développeur")
     etat = "mode développeur"
 
-
+#demande si on veut vraiment quitter le jeu
 def callback():
     if messagebox.askokcancel("Quit", "Voulez-vous vraiment quitter le jeu?"):
         window.destroy()
+        #arręte de jouer le son
         #winsound.PlaySound(None, winsound.SND_ASYNC)
     else:
         try:
             bottom_remove_bleu1(1, text="Quitter", x = screenX/1.3, y = screenY/1.17, boutonID = 3, image = 1)
         except:
-            print()
+            pass
 
 def jeu(mode):
     global canvas
@@ -146,22 +160,27 @@ def nouvelle_partie():
     global nouvellePartieCanvas
     main_canvas.destroy()
 
+    #création de canvas
     nouvellePartieCanvas = Canvas(window, bg="white", width = screenX, height = screenY)
     nouvellePartieCanvas.grid(row = 0, column = 0)
-
+    
+    #arričre plan et images de décoration
     nouvellePartieCanvas.create_image(screenX/2, screenY/2, image = imageBG)
     nouvellePartieCanvas.create_image(screenX/3, screenY/6, image = logo)
     nouvellePartieCanvas.create_image (screenX/2, screenY/2.7, image = imageFondTitre)
 
+    #insertion d'image - les boutons
     bottom5 = nouvellePartieCanvas.create_image(screenX/2, screenY/1.8, image = bottomImage)
     bottom6 = nouvellePartieCanvas.create_image(screenX/2, screenY/1.45, image = bottomImage)
     bottom7 = nouvellePartieCanvas.create_image(screenX/4.5, screenY/1.17, image = bottomImage2)
 
+    #Le texte sur les boutons
     nouvellePartieCanvas.create_text (screenX/2, screenY/2.7, font=(fontName, int(fontSize*1.5)), text='Nouvelle Partie', fill="white")
     nouvellePartieCanvas.create_text (screenX/2, screenY/1.8, font=(fontName, fontSize), text='Un joueur', fill=fontColor)
     nouvellePartieCanvas.create_text (screenX/2, screenY/1.45, font=(fontName, fontSize), text='Multijoueur', fill=fontColor)
     nouvellePartieCanvas.create_text (screenX/4.5, screenY/1.17, font=(fontName, fontSize), text='<---- Retour', fill=fontColor)
 
+    #si on passe avec la sourie sur les boutons, alors la fonction de sélection de mettra en place
     nouvellePartieCanvas.tag_bind(bottom5, "<Enter>", lambda event: bottom_bleu2(event, text="Un joueur", x = screenX/2, y = screenY/1.8, boutonID = 4, image = 0))
     nouvellePartieCanvas.tag_bind(bottom6, "<Enter>", lambda event: bottom_bleu2(event, text="Multijoueur", x = screenX/2, y = screenY/1.45, boutonID = 5, image = 0))
     nouvellePartieCanvas.tag_bind(bottom7, "<Enter>", lambda event: bottom_bleu2(event, text="<---- Retour", x = screenX/4.5, y = screenY/1.17, boutonID = 6, image = 1))
@@ -185,7 +204,7 @@ def menu_principal():
     bottom3 = main_canvas.create_image(screenX/1.3, screenY/1.55556, image = bottomImage)
     bottom4 = main_canvas.create_image(x4, y4, image = bottomImage2)
 
-    #insertion du texte
+    #insertion du texte sur les boutons
     main_canvas.create_text (screenX/1.3, screenY/2.8, font=(fontName, fontSize), text='Nouvelle Partie', fill=fontColor)
     main_canvas.create_text (screenX/1.3, screenY/2, font=(fontName, fontSize), text='Paramètres', fill=fontColor)
     main_canvas.create_text (screenX/1.3, screenY/1.55556, font=(fontName, fontSize), text='Score', fill=fontColor)

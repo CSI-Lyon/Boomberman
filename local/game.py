@@ -33,26 +33,27 @@ def render(window, canvas):
     global player
 
     casesID = [[0] * 19 for i in range(11)]
+    img = Image("blocks", "grass")
+
     for y in range(11):
         for x in range(19):
-            img = Image("blocks", "grass")
             canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img)
 
             case = map.get(x, y)
 
             if case == "GRASS" or case == "bedrock" or case == "stone":
-                img = Image("blocks", case)
+                img2 = Image("blocks", case)
             elif case == "GRASS+PLAYER_1":
-                img = Image("blocks", "GRASS")
+                img2 = Image("blocks", "GRASS")
                 imgJ1 = Image("skins/1", "down")
                 player = Player(1, "Mateusz", 0, x, y)
 
-            map.put(x, y, img)
-            casesID[y][x] = canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img)
+            map.put(x, y, img2)
+            casesID[y][x] = canvas.create_image(xGridMin + x*35 + 35/2 + 1, yGridMin + y*35 + 35/2 + 1, image = img2)
 
 
     player.IDimage = canvas.create_image(xGridMin + player.posX*35 + 35/2 + 1, yGridMin + player.posX*35 + 35/2 + 1, image = imgJ1)
-    window.bind("<space>", lambda event: bombe.putBomb(event, player, canvas, xGridMin, yGridMin))
+    window.bind("<space>", lambda event: bombe.putBomb(event, player, canvas, xGridMin, yGridMin, casesID))
 
     window.mainloop()
 

@@ -32,7 +32,7 @@ def get2(x, y):
 
 def set2(x, y, value):
     global grid2
-    grid2[x][y] = value
+    grid2[y][x] = int(value)
 
 def put(x, y, ID):
     global grid

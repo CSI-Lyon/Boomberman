@@ -7,103 +7,89 @@ lock = RLock()
 
 class BombPutting(Thread):
 
-    def __init__(self, x, y, canvas, xGridMin, yGridMin):
+    def __init__(self, x, y, canvas, xGridMin, yGridMin, casesID):
         Thread.__init__(self)
         self.x = x
         self.y = y
         self.canvas = canvas
         self.xGridMin = xGridMin
         self.yGridMin = yGridMin
+        self.casesID = casesID
 
     def run(self):
         global scope, mapp
-        
+
+        IDs = []
         #with lock:
+        map.set2(self.x,self.y, 7) #7 : id de la bombe
         for i in range(2):
-            map.set2(self.y,self.x, 7) #7 : id de la bombe
-            bomb = self.canvas.create_image(self.xGridMin + self.x*35 + 35/2 + 1, self.yGridMin + self.y*35 + 35/2 + 1, image = bombe)
-            time.sleep(0.2)
-            canvas.destroy(bomb)
-            bomb2 = self.canvas.create_image(self.xGridMin + self.x*35 + 35/2 + 1, self.yGridMin + self.y*35 + 35/2 + 1, image = bombe)
-            time.sleep(0.2)
+            IDs.append(self.canvas.create_image(self.xGridMin + self.x*35 + 35/2 + 1, self.yGridMin + self.y*35 + 35/2 + 1, image = grass))
+            IDs.append(self.canvas.create_image(self.xGridMin + self.x*35 + 35/2 + 1, self.yGridMin + self.y*35 + 35/2 + 1, image = bombe))
+            time.sleep(1)
+            IDs.append(self.canvas.create_image(self.xGridMin + self.x*35 + 35/2 + 1, self.yGridMin + self.y*35 + 35/2 + 1, image = grass))
+            IDs.append(self.canvas.create_image(self.xGridMin + self.x*35 + 35/2 + 1, self.yGridMin + self.y*35 + 35/2 + 1, image = bombe_rouge))
+            time.sleep(1)
             print("a")
 
-        canvas.destroy(bomb)
+        IDs.append(self.canvas.create_image(self.xGridMin + self.x*35 + 35/2 + 1, self.yGridMin + self.y*35 + 35/2 + 1, image = grass))
+        for i in IDs:
+            for e in range (9):
+                self.canvas.delete(i)
         # Ici, on fait exploser la bombe
-        map.set2(self.y,self.x, 0) # On libère la case occupée par la bombe
+        map.set2(self.x,self.y, 0) # On libère la case occupée par la bombe
         #render()
         
         #Haut
         for i in range(self.y-1, self.y-scope-2, -1): #Ici, il faut remplacer scope par player.getScope()
-            if i > 0:
-                case = map.get2(i, self.x)
+            if i >= 0:
+                case = int( map.get2(self.x, i) )
                 if case != 0 and case != 2:
-                    map.set2(i,self.x, 0)
+                    map.set2(self.x, i, 0)
+                    self.canvas.delete(self.casesID[i][self.x])
                     break
             else:
                 break
-        print('e')
         #Droite
         for i in range(self.x+1, self.x+scope+2): #Ici, il faut remplacer scope par player.getScope()
-            if i < 5:
-                case = map.get2(self.y, i)
+            if i <= 18:
+                case = map.get2(i, self.y)
                 if case != 0 and case != 2:
-                    map.set2(self.y,i, 0)
+                    map.set2(i, self.y, 0)
+                    self.canvas.delete(self.casesID[self.y][i])
                     break
             else:
                 break
-        print('e')
         #Bas
         for i in range(self.y+1, self.y+scope+2): #Ici, il faut remplacer scope par player.getScope()
-            if i < 5:
-                case = map.get2(i, self.x)
+            if i <= 18:
+                case = map.get2(self.x, i)
                 if case != 0 and case != 2:
-                    map.set2(self.y,i, 0)
+                    map.set2(self.x,i, 0)
+                    self.canvas.delete(self.casesID[i][self.x])
                     break
             else:
                 break
         print('e')
         #Gauche
         for i in range(self.x-1, self.x-scope-2, -1): #Ici, il faut remplacer scope par player.getScope()
-            if i > 0:
-                case = map.get2(self.y, i)
+            if i >= 0:
+                case = map.get2(i, self.y)
                 if case != 0 and case != 2:
-                    map.set2(self.y,i, 0)
+                    map.set2(i, self.y, 0)
+                    self.canvas.delete(self.casesID[self.y][i])
                     break
             else:
                 break
         print('e')
+    
 
-def putBomb(event, player, canvas, xGridMin, yGridMin): #def putBomb(event)
-    global scope, bombe, bombe_rouge
+def putBomb(event, player, canvas, xGridMin, yGridMin, casesID): #def putBomb(event)
+    global scope, bombe, bombe_rouge, grass
     bombe = Image ("objects", "bomb")
     bombe_rouge = Image ("objects", "bomb_rouge")
+    grass = Image("blocks", "grass")
     scope = 1
-    threadBomb = BombPutting(player.posX, player.posY, canvas, xGridMin, yGridMin)
+    threadBomb = BombPutting(player.posX, player.posY, canvas, xGridMin, yGridMin, casesID)
     print("o")
     threadBomb.start()
     print("o")
-    threadBomb.join()
-    print("o")
-"""
-def main():
-    global mapp
-    mapp = [
-        [1, 1, 1, 0, 0],
-        [0, 0, 2, 2, 1],
-        [0, 0, 1, 0, 0],
-        [0, 1, 0, 0, 0],
-        [0, 2, 2, 1, 0]
-    ] # 0 = case vide, 1 = bloc cassable, 2 = bloc incassable, 3 = bombe noire, 4 = bombe rouge (allumée)
-
-    global scope
-    scope = 1 # Portée de la bombe
-
-    # Ici on récupère les cordonnées du joueur quand il pose la bombe
-    y = 3
-    x = 2
-
-    putBomb(x, y)
-
-main()
-"""
