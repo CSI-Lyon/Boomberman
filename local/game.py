@@ -71,10 +71,10 @@ def render(window, canvas):
                 img2 = Image("blocks", "GRASS")
                 imgJ1 = Image("skins/1", "down")
                 player = Player(1, "Mateusz", 0, x, y)
-            elif case == "GRASS+GHOST":
+            elif case == "GHOST":
                 img2 = Image("blocks", "GRASS")
                 imgG = Image("skins/ennemis", "ghost")
-                ghost = Ennemi(0, x, y, True)
+                ghost = Ennemi(0,canvas, x, y, True)
                 ghosts.append(ghost)
             map.put(x, y, img2)
             
@@ -85,8 +85,10 @@ def render(window, canvas):
    
     for i in ghosts:   
         i.imageID = canvas.create_image(xGridMin + i.posX*35 + 35/2 + 1, yGridMin + i.posY*35 + 35/2 + 1, image = imgG)
+        i.canvas = canvas
         i.start()
-        print( i.posX,  i.posY)
+
+        
     window.bind("<space>", lambda event: bombe.putBomb(event, player, canvas, xGridMin, yGridMin, casesID))
     
     window.mainloop()
