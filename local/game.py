@@ -27,6 +27,8 @@ def keyPressed(event, canvas):
             canvas.itemconfig(player.IDimage, image = imgJ1)
             canvas.move(player.IDimage, 0, -35)
             player.posY -= 1
+            map.set2(player.posX, player.posY+1, 0)
+            map.set2(player.posX, player.posY, 10)
 
     elif key == "Down" and player.posY <= 9:
         case = map.get2(player.posX, player.posY+1)
@@ -35,6 +37,8 @@ def keyPressed(event, canvas):
             canvas.itemconfig(player.IDimage, image = imgJ1)
             canvas.move(player.IDimage, 0, +35)
             player.posY += 1
+            map.set2(player.posX, player.posY-1, 0)
+            map.set2(player.posX, player.posY, 10)
         
     elif key == "Right" and player.posX <= 17:
         case = map.get2(player.posX+1, player.posY)
@@ -43,6 +47,8 @@ def keyPressed(event, canvas):
             canvas.itemconfig(player.IDimage, image = imgJ1)
             canvas.move(player.IDimage, +35, 0)
             player.posX += 1
+            map.set2(player.posX-1, player.posY, 0)
+            map.set2(player.posX, player.posY, 10)
     
     elif key == "Left" and player.posX >= 1:
         case = map.get2(player.posX-1, player.posY)
@@ -51,6 +57,8 @@ def keyPressed(event, canvas):
             canvas.itemconfig(player.IDimage, image = imgJ1)
             canvas.move(player.IDimage, -35, 0)
             player.posX -= 1
+            map.set2(player.posX+1, player.posY, 0)
+            map.set2(player.posX, player.posY, 10)
     print(player.IDimage, case)
 
 def render(window, canvas):
@@ -70,11 +78,11 @@ def render(window, canvas):
             elif case == "GRASS+PLAYER_1":
                 img2 = Image("blocks", "GRASS")
                 imgJ1 = Image("skins/1", "down")
-                player = Player(1, "Mateusz", 0, x, y)
+                player = Player(1, "Mateusz", 0, x, y, 0, canvas)
             elif case == "GHOST":
                 img2 = Image("blocks", "GRASS")
                 imgG = Image("skins/ennemis", "ghost")
-                ghost = Ennemi(0,canvas, x, y, True)
+                ghost = Ennemi(0,canvas, x, y, True, player)
                 ghosts.append(ghost)
             map.put(x, y, img2)
             
@@ -86,6 +94,7 @@ def render(window, canvas):
     for i in ghosts:   
         i.imageID = canvas.create_image(xGridMin + i.posX*35 + 35/2 + 1, yGridMin + i.posY*35 + 35/2 + 1, image = imgG)
         i.canvas = canvas
+        player.ennemisADetruire+=1
         i.start()
 
         
