@@ -64,18 +64,18 @@ class Ennemi(Thread):
               or int(map.get2(self.posX+1, self.posY)) == 10\
               or int(map.get2(self.posX+1, self.posY)) == 7):
 
-            print("case", map.get2(self.posX+1, self.posY), self.posX+1, self.posY)
+            print("ghost", map.get2(self.posX+1, self.posY), self.posX+1, self.posY)
 
             #si c'est une zone oů il y a un joueur, alors le joueur perd une vie
             if int(map.get2(self.posX+1, self.posY)) == 10:
                 self.player.pertVie()
 
-            elif int(map.get2(self.posX+1, self.posY)) == 7:
+            if int(map.get2(self.posX+1, self.posY)) == 7:
                 self.alive = False
                 self.dele()
                 return 0
 
-            print("enne", int(map.get2(self.posX+1, self.posY)))
+            print("bomba", int(map.get2(6, 2)))
 
             #si le joueur a perdu, alors on detruit l'ennemie
             if self.player.vie == 0:
@@ -91,7 +91,7 @@ class Ennemi(Thread):
             #except:
             #    pass
 
-            print("droite bouge")
+            #print("droite bouge")
 
             #si l'ennemie n'est pas sorti de la grille, alors il va avancer vers la droite
             if self.posX < 18:
@@ -116,19 +116,19 @@ class Ennemi(Thread):
               or int(map.get2(self.posX-1, self.posY)) == 10\
               or int(map.get2(self.posX-1, self.posY)) == 7:
             
-            print("case", int(map.get2(self.posX+1, self.posY)), self.posX+1, self.posY==7)
+            #print("case", int(map.get2(self.posX+1, self.posY)), self.posX+1, self.posY==7)
         
 
             #si c'est une zone oů il y a un joueur, alors le joueur perd une vie
             if int(map.get2(self.posX-1, self.posY)) == 10:
                 self.player.pertVie()
 
-            elif int(map.get2(self.posX-1, self.posY)) == 7:
+            if int(map.get2(self.posX-1, self.posY)) == 7:
                 self.alive = False
                 self.dele()
                 return 0
 
-            print("enne", int(map.get2(self.posX+1, self.posY)))
+            #print("enne", int(map.get2(self.posX+1, self.posY)))
 
             #si le joueur a perdu, alors on detruit l'ennemie
             if self.player.vie == 0:

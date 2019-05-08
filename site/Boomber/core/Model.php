@@ -3,20 +3,15 @@ class Model
 {
    public static $connections = array();
 
-   public $config = 'default'; // ID de la base
-   public $table = false;
+   private $config = 'default'; // ID de la base
+   private $table = false; // Table
 
-   public $form;
-   public $errors = array(); // Erreurs sur un formulaire
-
-   public $db;
+   private $db; // Base de données
 
    public function __construct()
    {
       if ($this->table == false)
-      {
          $this->table = strtolower(get_class($this)) . 's'; // Initialisation de la table à utiliser
-      }
 
       // Connexion à la base de données
       $config = Configuration::getAttribute('sql')[$this->config];
@@ -38,7 +33,7 @@ class Model
 
          if (Configuration::isDebugMode()) $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // Debug
 
-         Model::$connections[$this->config] = $pdo;
+         self::$connections[$this->config] = $pdo;
          $this->db = $pdo;
       }
       catch (\PDOException $e)
@@ -69,18 +64,12 @@ class Model
       if (isset($req['fields']))
       {
          if (is_array($req['fields']))
-         {
             $sql .= implode(', ', $req['fields']); // Séparation des champs par ','
-         }
          else
-         {
             $sql .= $req['fields'];
-         }
       }
       else
-      {
          $sql .= '*';
-      }
 
       $sql .= ' FROM ' . $this->table . ' AS ' . get_class($this) . ' ';
 
@@ -91,29 +80,32 @@ class Model
       {
          $sql .= 'WHERE ';
          if (!is_array($req['conditions']))
-         {
-            $sql .= $req['conditions'];
-         }
+            $sql .= $req['conditions'] . ' ';
          else
          {
-            $conditions = array();
-            foreach ($req['conditions'] as $key => $value)
+         $conditions = array();
+         foreach ($req['conditions'] as $key => $value)
+         {
+            if (!is_numeric($value))
             {
-               if (!is_numeric($value)) $value = '"' . htmlentities($value, ENT_QUOTES) . '"'; // Supression des guillemets
-               $conditions[] = "$key=$value";
+               $value = '"' . htmlentities($value, ENT_QUOTES) . '"'; // Supression des guillemets
             }
 
-            $sql .= implode(' AND ', $conditions); // Séparation des conditions par AND
+            $conditions[] = "$key = $value";
+         }
+
+         $sql .= implode(' AND ', $conditions); // Séparation des conditions par AND
          }
       }
+
+      if (isset($req['orderBy']))
+         $sql .= 'ORDER BY ' . $req['orderBy'];
 
       /*
       Construction de la clause LIMIT
       */
       if (isset($req['limit']))
-      {
          $sql .= 'LIMIT ' . $req['limit'];
-      }
 
       $pre = $this->db->prepare($sql);
       $pre->execute();
@@ -138,16 +130,25 @@ class Model
 
    /**
    * Exécute une requête personnalisée en comptant le nombre d'entrées
-   * @param conditions Conditions de la requête
+   * @param conditions Conditions de la requête (facultatif)
    *
    * @return count Nombre d'entrées
    */
-   public function findCount($conditions)
+   public function findCount($conditions = null)
    {
-      $result = $this->findFirst(array(
-         'fields' => 'COUNT(*) AS count',
-         'conditions' => $conditions
-      ));
+      if (isset($conditions))
+      {
+         $result = $this->findFirst(array(
+            'fields' => 'COUNT(*) AS count',
+            'conditions' => $conditions
+         ));
+      }
+      else
+      {
+         $result = $this->findFirst(array(
+            'fields' => 'COUNT(*) AS count'
+         ));
+      }
 
       $count = $result->count;
 
@@ -169,7 +170,7 @@ class Model
    * Insère ou met à jour une entrée dans la base de données
    * @param data Données à mettre à jour
    *
-   * @return true La procédure s'est bien déroulée
+   * @return id Id de l'entrée insérée
    */
    public function save($data)
    {
@@ -197,55 +198,9 @@ class Model
       }
 
       $pre = $this->db->prepare($sql);
+
       $pre->execute($values);
 
-      return true;
-   }
-
-   /**
-   * Valide le formulaire ou non
-   * @param data Données du formulaire
-   *
-   * @return true/false true si le formulaire est valide, false sinon
-   */
-   public function validates($data)
-   {
-      $errors = array();
-      foreach ($this->validation as $key => $value)
-      {
-         if (!isset($data->$key))
-         {
-            $errors[$key] = $value['message'];
-         }
-         else
-         {
-            if ($value['rule'] == 'notEmpty')
-            {
-               if (empty($data->$key))
-               {
-                  $errors[$key] = $value['message'];
-               }
-            }
-            elseif (!preg_match('#^' . $value['rule'] . '$#', $data->$key))
-            {
-               $errors[$key] = $value['message'];
-            }
-         }
-      }
-
-      $this->errors = $errors;
-      if (isset($this->Form))
-      {
-            $this->Form->errors = $errors;
-      }
-
-      if (empty($errors))
-      {
-         return true;
-      }
-      else
-      {
-         return false;
-      }
+      return $this->db->lastInsertId();
    }
 }

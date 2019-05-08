@@ -10,16 +10,15 @@ class PostsController extends Controller
 
       $this->loadModel('Post');
 
-      $conditions = array('online' => 1, 'type' => 'post');
-
-      $posting['posts'] = $this->Post->find(array(
-         'conditions' => $conditions,
+      $array['posts'] = $this->Post->find(array(
+         'conditions' => 'online = 1',
          'limit' => (($this->request->page - 1) * $perPage) . ',' . $perPage
       ));
-      $posting['nbPosts'] = $this->Post->findCount($conditions);
-      $posting['nbPages'] = ceil($posting['nbPosts'] / $perPage);
 
-      $this->setAll($posting);
+      $array['nbPosts'] = $this->Post->findCount('online = 1');
+      $array['nbPages'] = ceil($array['nbPosts'] / $perPage);
+
+      $this->setAll($array);
    }
 
    /**
@@ -27,13 +26,13 @@ class PostsController extends Controller
    * @param id Id du post à afficher
    * @param slug Slug du post à afficher
    */
-   function view($id, $slug)
+   function view($slug, $id)
    {
       $this->loadModel('Post');
 
       $post = $this->Post->findFirst(array(
          'fields'     => 'id, slug, content, name',
-         'conditions' => array('id' => $id, 'online' => 1, 'type' => 'post')
+         'conditions' => array('id' => $id, 'online' => 1)
       ));
 
       if (empty($post))
@@ -44,7 +43,7 @@ class PostsController extends Controller
       if ($slug != $post->slug)
       {
          // Le slug a été modifié dans la base de données, on demande à Google d'effectuer une redirection permanente
-         $this->redirect("posts/view/id:$id/slug:$post->slug", 301);
+         $this->redirect("blog/view/$post->slug-$post->id", 301);
       }
 
       $this->set('post', $post);
@@ -63,14 +62,12 @@ class PostsController extends Controller
 
       $this->loadModel('Post');
 
-      $conditions = array('type' => 'post');
-
       $posting['posts'] = $this->Post->find(array(
          'fields' => 'id, name, online',
-         'conditions' => $conditions,
-         'limit' => (($this->request->page - 1) * $perPage) . ',' . $perPage
+         'limit'  => (($this->request->page - 1) * $perPage) . ',' . $perPage
       ));
-      $posting['nbPosts'] = $this->Post->findCount($conditions);
+
+      $posting['nbPosts'] = $this->Post->findCount();
       $posting['nbPages'] = ceil($posting['nbPosts'] / $perPage);
 
       $this->setAll($posting);
@@ -87,7 +84,7 @@ class PostsController extends Controller
       $this->Post->delete($id);
       $this->Session->setFlash('Le contenu a bien été supprimé');
 
-      $this->redirect('admin/posts/index');
+      $this->redirect('admin/blog');
    }
 
    /**
@@ -100,20 +97,32 @@ class PostsController extends Controller
 
       if ($this->request->data)
       {
+
          /*
-         Gestion du formulaire
+         Gestion du formulaire d'édition
          */
-         if ($this->Post->validates($this->request->data))
+
+         // Règles de validation
+         $validation = array(
+            'name' => array(
+               'required' => true,
+            ),
+            'slug' => array(
+               'required' => true,
+               'rule' => '([a-z0-9\-]+)',
+               'message' => "L'url n'est pas valide"
+            )
+         );
+
+         if ($this->Form->validates($validation))
          {
             // Le formulaire est bon
-            $this->request->data->type = 'post'; // Ajout du type
             $this->request->data->created = date('Y-m-d h:i:s'); // Ajout de la date
 
-            $this->Post->save($this->request->data); // Sauvegarde des données
-            $this->Session->setFlash('Le contenu a bien été modifié');
-            $id = $this->request->data->id;
+            $id = $this->Post->save($this->request->data); // Sauvegarde des données
+            $this->Session->setFlash('Le contenu a bien été sauvegardé');
 
-            $this->redirect('admin/posts/index'); // Redirection vers l'accueil
+            $this->redirect('admin/blog'); // Redirection vers l'accueil
          }
          else
          {

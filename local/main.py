@@ -46,7 +46,7 @@ def bottom(event):
             etat = "nouvelle partie"
             nouvelle_partie()
         elif event.x > x4 - 188 and event.x < x4 + 188 and event.y > y4 - 33 and event.y < y4 + 33:
-            callback()
+            quitter()
     #męme principe, mais seulement si on se trouve dans le menu nouvelle partie
     elif etat == "nouvelle partie":
         if event.x > screenX/2 - 188 and event.x < screenX/2 + 188 and event.y > screenY/1.8 - 33 and event.y < screenY/1.8 + 33:
@@ -127,11 +127,11 @@ def mode_developpeur(event):
     etat = "mode développeur"
 
 #demande si on veut vraiment quitter le jeu
-def callback():
+def quitter():
     if messagebox.askokcancel("Quit", "Voulez-vous vraiment quitter le jeu?"):
         window.destroy()
         #arręte de jouer le son
-        #winsound.PlaySound(None, winsound.SND_ASYNC)
+        winsound.PlaySound(None, winsound.SND_ASYNC)
     else:
         try:
             bottom_remove_bleu1(1, text="Quitter", x = screenX/1.3, y = screenY/1.17, boutonID = 3, image = 1)
@@ -237,7 +237,7 @@ def main():
     window.iconbitmap('images/Bomberman_icon.ico')
 
     #Demande si on veut vraiment fermer la fenêtre
-    window.protocol("WM_DELETE_WINDOW", callback)
+    window.protocol("WM_DELETE_WINDOW", quitter)
 
     #Récupération des différentes touches
     window.bind("<Button-1>", bottom)

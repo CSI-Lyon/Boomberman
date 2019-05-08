@@ -1,6 +1,6 @@
 <h1>Éditer un article</h1>
 
-<form action="<?php echo Router::url('admin/posts/edit/' . $id) ?>" method="post">
+<form action="<?php isset($id) ? Router::url('admin/blog/edit/' . $id) : Router::url('admin/blog/create')?>" method="post">
    <?php echo $this->Form->input('name', 'Nom : ') ?>
    <br>
 

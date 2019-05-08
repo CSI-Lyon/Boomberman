@@ -10,3 +10,7 @@
 
    <input type="submit" value="Se connecter">
 </form>
+
+<p>
+Pas encore inscrit ? <a href="<?php echo Router::url('users/register') ?>">Par ici</a> l'inscription !
+</p>
