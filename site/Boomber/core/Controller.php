@@ -3,17 +3,39 @@ class Controller
 {
    public $request;
 
+   private $layout = 'default';
    private $vars = array(); // Variables accessibles par la vue
-
-   public $layout = 'default';
    private $rendered = false;
 
    function __construct($request = null)
    {
+      $this->Session = new Session(); // Chargement de la session
+
+      $this->Form = new Form($this); // Chargement du gestionnaire de formulaire
+      $this->Table = new Table($this); // Chargement du gestionnaire de tableau
+
       if ($request)
       {
          $this->request = $request;
-         if(!empty($request->prefix)) $this->layout = Configuration::getAttribute('hook')[$this->request->prefix];
+
+
+         if (strpos($request->url, '/profil') === 0 and !$this->Session->isLogged())
+         {
+            // Si l'utilisateur tente d'accéder au profil alors qu'il n'est pas connecté, on le redirige à l'accueil
+            $this->redirect('');
+         }
+         else if (strpos($request->url, '/admin') === 0) {
+            $this->layout = 'admin';
+
+            if (strpos($this->request->url, '/admin') === 0)
+            {
+               if (!$this->Session->isLogged()) //and Configuration::getAttribute('perms')[$this->Session->read('user')])
+               {
+                  // L'utilisateur n'a pas la permission
+                  $this->redirect(''); // Redirection à la racine
+               }
+            }
+         }
       }
    }
 
@@ -35,6 +57,15 @@ class Controller
       {
          $view = ROOT . DS . 'view' . DS . $this->request->controller . DS . $view . '.php';
       }
+
+
+      /*
+      A AMELIORER
+      */
+      $file = WEBROOT . DS . 'css' . DS . 'boomber.css';
+      $content = file_get_contents($file);
+
+      echo '<style>' . $content . '</style>';
 
       /*
       * Récupération du contenu au lieu de l'afficher
@@ -60,11 +91,6 @@ class Controller
          require_once $file;
 
          $this->$model = new $model();
-
-         if (isset($this->Form))
-         {
-            $this->$model->Form = $this->Form;
-         }
       }
    }
 

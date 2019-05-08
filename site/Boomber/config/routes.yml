@@ -1,0 +1,55 @@
+index:
+   path:
+   controller: pages:index
+
+scoreboard:
+   path: scoreboard
+   controller: pages:scoreboard
+
+blog_index:
+   path: blog
+   controller: posts:index
+
+blog_view:
+   path: blog/view/{slug:([a-z\-]+)}-{id:([0-9]+)}
+   controller: posts:view
+
+post_index:
+   path: admin/blog
+   controller: posts:admin_index
+
+post_create:
+   path: admin/blog/create
+   controller: posts:admin_edit
+
+post_edit:
+   path: admin/blog/edit/{id:([0-9]+)}
+   controller: posts:admin_edit
+
+post_delete:
+   path: admin/blog/delete/{id:([0-9]+)}
+   controller: posts:delete
+
+login:
+   path: users/login
+   controller: users:login
+
+register:
+   path: users/register
+   controller: users:register
+
+logout:
+   path: profil/logout
+   controller: users:logout
+
+mailbox_index:
+   path: profil/mailbox
+   controller: messages:index
+
+mailbox_view:
+   path: profil/mailbox/view/{id:([0-9]+)}
+   controller: messages:view
+
+mailbox_send:
+   path: profil/mailbox/send
+   controller: messages:send

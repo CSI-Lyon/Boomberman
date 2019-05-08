@@ -2,6 +2,75 @@
 class UsersController extends Controller
 {
    /**
+   * Inscription
+   */
+   function register()
+   {
+      if ($this->request->data)
+      {
+         $this->loadModel('User');
+
+         $data = $this->request->data;
+
+         /*
+         Gestion du formulaire d'inscription
+         */
+
+         // Règles de validation
+         $validation = array(
+            'username' => array(
+               'required' => true,
+               'rule' => '([\w0-9]{4,})',
+               'message' => "Le pseudo n'est pas valide (4 caractères alphanumériques au moins)"
+            ),
+            'password' => array(
+               'required' => true,
+               'rule' => '([\w0-9]{6,})',
+               'message' => "Le mot de passe n'est pas valide (6 caractères alphanumériques au moins)"
+            ),
+            'recapPassword' => array(
+               'required' => true,
+               'equals' => 'password',
+               'message' => "Ce champ n'est pas identique au mot de passe tapé"
+            )
+         );
+
+         if ($this->Form->validates($validation))
+         {
+            /*
+            Le formulaire est valide
+            */
+            if (!$this->User->usernameExists($data->username))
+            {
+               /*
+               Le nom d'utilisateur n'existe pas
+               */
+               unset($data->recapPassword);
+               $data->password = sha1($data->password);
+               $user = $this->User->save($data); // Insertion du nouveau membre dans la bdd
+
+               $this->loadModel('Player');
+               $this->Player->save($user); // Insertion du nouveau joueur dans la bdd
+
+               $this->Session->setFlash('Bienvenue parmis nous !');
+               $this->Session->write('user', $user);
+
+               $this->redirect(''); // Redirection à la racine
+            }
+            else
+            {
+               // Le nom d'utilisateur existe déjà
+               $this->Session->setFlash('Erreur : Le pseudo existe déjà');
+            }
+         }
+         else
+         {
+            $this->Session->setFlash('Merci de bien vouloir corriger vos informations');
+         }
+      }
+   }
+
+   /**
    * Connexion
    */
    function login()
@@ -12,29 +81,45 @@ class UsersController extends Controller
 
          $data = $this->request->data;
 
-         $username = $data->username;
-         $password = sha1($data->password); // Encodage du mot de passe
+         // Règles de validation
+         $validation = array(
+            'username' => array(
+               'required' => true,
+            ),
+            'password' => array(
+               'required' => true
+            )
+         );
 
-         $user = $this->User->findFirst(array(
-            'conditions' => array('username' => $username, 'password' => $password)
-         ));
-
-         if (!empty($user))
+         if ($this->Form->validates($validation))
          {
             /*
-            Utilisateur trouvé
+            Le formulaire est valide
             */
-            $this->request->data->password = ''; // Supression du mot de passe de la requête
+            $username = $data->username;
+            $password = sha1($data->password); // Encodage du mot de passe
 
-            $this->Session->write('user', $user);
-            $this->Session->setFlash("Content de vous revoir $user->username !");
-         }
-         else
-         {
-            /*
-            Utilisateur non trouvé
-            */
-            $this->Session->setFlash('Pseudo ou mot de passe incorrect');
+            $user = $this->User->findFirst(array(
+               'conditions' => array('username' => $username, 'password' => $password)
+            ));
+
+            if (!empty($user))
+            {
+               /*
+               Utilisateur trouvé
+               */
+               $this->request->data->password = ''; // Supression du mot de passe de la requête
+
+               $this->Session->write('user', $user);
+               $this->Session->setFlash("Content de vous revoir $username !");
+            }
+            else
+            {
+               /*
+               Utilisateur non trouvé
+               */
+               $this->Session->setFlash('Pseudo ou mot de passe incorrect');
+            }
          }
       }
 
@@ -43,7 +128,7 @@ class UsersController extends Controller
          /*
          Une session est ouverte
          */
-         $this->redirect(''); // Redirection à la racine
+         $this->redirect('admin/blog'); // Redirection à la racine
       }
    }
 

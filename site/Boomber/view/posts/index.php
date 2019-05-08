@@ -1,8 +1,6 @@
 <?php $title_for_layout = 'Blog' ?>
 
-<div class="top-page">
-   <h1>Blog</h1>
-</div>
+<h1>Blog</h1>
 
 <?php foreach ($posts as $post): ?>
 
@@ -10,7 +8,7 @@
 
    <?php echo $post->content ?>
 
-   <p><a href=<?php echo Router::url("posts/view/id:{$post->id}/slug:$post->slug") ?>>Lire la suite &rarr;</a></p>
+   <p><a href=<?php echo Router::url("blog/view/$post->slug-$post->id") ?>>Lire la suite &rarr;</a></p>
 
 <?php endforeach; ?>
 

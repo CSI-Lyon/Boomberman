@@ -1,35 +1,29 @@
 <?php
 class PagesController extends Controller
 {
-   /**
-   * Affichage d'une page
-   */
-   function view($id)
+   function index()
    {
-      $this->loadModel('Post');
-      $page = $this->Post->findFirst(array(
-         'conditions' => array('id' => $id, 'online' => 1, 'type' => 'page')
-      ));
 
-      if(empty($page))
-      {
-         $this->e404('Cette page n\'existe pas');
-      }
-
-      $this->set('page', $page);
    }
 
-   /**
-   * Récupère les pages du menu
-   * @return pages Pages du menu
-   */
-   public function getMenu()
+   function scoreboard()
    {
-      $this->loadModel('Post');
-      $pages = $this->Post->find(array(
-         'conditions' => array('online' => 1, 'type' => 'page')
+      $this->loadModel('User');
+      $this->loadModel('Player');
+
+      $players = $this->Player->find(array(
+         'fields' => 'id, games_played, score',
+         'orderBy' => 'score'
       ));
 
-      return $pages;
+      foreach ($players as $player)
+      {
+         $player->id = $this->User->findFirst(array(
+            'fields' => 'username',
+            'conditions' => array('id' => $player->id)
+         ))->username;
+      }
+
+      $this->set('players', $players);
    }
 }

@@ -1,0 +1,14 @@
+th
+{
+   font-weight: normal;
+}
+
+th[sorted]
+{
+   cursor: pointer;
+}
+
+th[sorted]:hover
+{
+   font-weight: bold;
+}

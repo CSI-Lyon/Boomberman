@@ -7,5 +7,5 @@ sql:
       username: root
       password: root
 
-hook:
-   admin: admin
+perms:
+   1: admin
