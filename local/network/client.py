@@ -1,21 +1,49 @@
 import socket
+import threading
+import sys
 
 host = "192.168.0.12"
 portEnvoi = 12345
-portRecoit = 12346
+portReception = 12346
 connEnvoi = socket.socket()
-connRecoit = socket.socket()
+connReception = socket.socket()
 
 connEnvoi.connect((host, portEnvoi))
-connRecoit.connect((host, portRecoit))
+connReception.connect((host, portReception))
 
 data = ""
 
-while data != "quit":
-    data = input("message a envoyer : ")
-    connEnvoi.sendall(bytes(data, "utf-8"))
-    data = connRecoit.recv(1024)
-    print(str(data.decode("utf-8")))
+def processMessages(connReception, connEnvoi):
+    while True:
+        try:
+            data = connReception.recv(1024)
+            if not data:
+                connReception.close()
+            print(data.decode("utf-8"))
+        except:
+            connEnvoi.close()
+            connReception.close()
+            print("Connection closed by")
+            # Quit the thread.
+            sys.exit()
+    if data=="quit":
+        sys.exit()
 
-connEnvoi.close()
-connRecoit.close()
+def sender(connEnvoi,data):
+    while data != "quit":
+        data = input("message a envoyer : ")
+        try:
+            connEnvoi.sendall(bytes(data, "utf-8"))
+        except:
+            data = "quit"
+            sys.exit()
+        #data = connReception.recv(1024)
+        #print(str(data.decode("utf-8")))
+
+
+
+listener = threading.Thread(target=processMessages, args=(connReception, connEnvoi))
+listener.start()
+
+send = threading.Thread(target=sender, args=(connEnvoi,data))
+send.start()
