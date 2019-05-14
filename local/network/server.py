@@ -47,7 +47,8 @@ while True:
     #ouvre un thread pour récupčrer les messages sortant du client
     listener = threading.Thread(target=processMessages, args=(connection1, addr1, connection2, addr2))
     listener.start()
-
+    nbPlayers+=1
+    
     playerID = 1
     fullnames = ""
     #si tous les joueurs se sont connectés sur le serveur
