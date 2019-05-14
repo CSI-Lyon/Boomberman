@@ -3,6 +3,7 @@ decoding = {
     1 : "stone",
     2 : "bedrock",
     10 : "GRASS+PLAYER_1",
+    20 : "GRASS+PLAYER_2",
     50 : "GHOST"
 }
 
