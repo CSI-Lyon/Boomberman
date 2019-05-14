@@ -27,6 +27,7 @@ fontSize = 25
 fontName = "Arial Black"
 fontColor = "#2A4B7C"
 
+#connexion vers le serveur 
 def connection(host, portEnvoi):
     global connReception, connEnvoi
     portReception = portEnvoi + 1
@@ -36,32 +37,35 @@ def connection(host, portEnvoi):
     connEnvoi.connect((host, portEnvoi))
     connReception.connect((host, portReception))
 
+#un thread qui récupčre les messages envoyés par le serveur
 def processMessages(connReception, connEnvoi):
     print("process start")
     while True:
-        #try:
-        data = connReception.recv(256)
-        data = data.decode("utf-8")
-        data = data.split(",")
-        print(data)
-        if data[0] == "Up" or data[0] == "Down" or data[0] == "Left" or data[0] == "Right":
-            if int(data[1]) == 1:
-                player.move(data[0])
-            elif int(data[1]) == 2:
-                player2.move(data[0])
+        try:
+            data = connReception.recv(256)
+            data = data.decode("utf-8")
+            data = data.split(",")
+            #interprétation des données reçus
 
-        elif data[0] == "space":
-            if int(data[1]) == 1:
-                bombe.putBomb(player,player2, canvasGlobal, xGridMin, yGridMin, casesID, modeGlobal)
-            elif int(data[1]) == 2:
-                bombe.putBomb(player2,player, canvasGlobal, xGridMin, yGridMin, casesID, modeGlobal)
-        #except:
-            #pass
-##            connEnvoi.close()
-##            connReception.close()
-##            print("Connection closed by")
-##            # Quit the thread.
-##            sys.exit()
+            #si c'est des flčches, alors on execute la fonction mouvement du joueur correspondant
+            if data[0] == "Up" or data[0] == "Down" or data[0] == "Left" or data[0] == "Right":
+                if int(data[1]) == 1:
+                    player.move(data[0])
+                elif int(data[1]) == 2:
+                    player2.move(data[0])
+            #sinon si c'est un espace, alors on execute la fontion poser une bombe
+            elif data[0] == "space":
+                if int(data[1]) == 1:
+                    bombe.putBomb(player,player2, canvasGlobal, xGridMin, yGridMin, casesID, modeGlobal)
+                elif int(data[1]) == 2:
+                    bombe.putBomb(player2,player, canvasGlobal, xGridMin, yGridMin, casesID, modeGlobal)
+        except:
+            #s'il y a une erreur, alors on ferme la connexion
+            connEnvoi.close()
+            connReception.close()
+            print("Connection closed by")
+            #sort du thread
+            sys.exit()
 
 
 #On récupčre le texte des champs des paramčtres du jeu
@@ -156,7 +160,7 @@ def render(window, canvas, xMax, yMin, mode):
                     player = Player(1, name, 0, x, y, 0, canvas,0, int(vie))
                 else:
                     player = Player(1, namesSplited[0], 0, x, y, 0, canvas,0, int(vie))
-                    
+                #affiche le titre (joueur 1), le nom et le nombre de points de vie du joueur                  
                 canvas.create_text(xGridMin - screenX/13, yGridMin + screenY/20, \
                                    font=(fontName, int(fontSize/1.5)), text='Joueur 1', fill="white")
                 canvas.create_text(xGridMin - screenX/13, yGridMin + screenY/10, \
@@ -169,12 +173,13 @@ def render(window, canvas, xMax, yMin, mode):
                 img2 = Image("blocks", "GRASS")
                 imgJ2 = Image("skins/2", "up")
                 player2 = Player(2, namesSplited[1], 0, x, y, 0, canvas, 0, int(vie))
-                
+                #affiche le titre (joueur 1), le nom et le nombre de points de vie du joueur
                 canvas.create_text(xGridMin - screenX/13, yGridMin + screenY/7, \
                                    font=(fontName, int(fontSize/1.5)), text='Joueur 2', fill="white")
                 canvas.create_text(xGridMin - screenX/13, yGridMin + screenY/5, \
                                    font=(fontName, int(fontSize)), text=player.name, fill="white")
 
+            #on affiche un fantôme
             elif case == "GHOST":
                 img2 = Image("blocks", "GRASS")
                 imgG = Image("skins/ennemis", "ghost")

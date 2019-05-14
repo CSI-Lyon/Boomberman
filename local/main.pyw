@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-#import winsound
-#import pdb
+import winsound
+
 import time
 
 import game
@@ -162,8 +162,7 @@ def jeu(mode):
     global canvas
     nouvellePartieCanvas.destroy()
 
-    #winsound.PlaySound(None, winsound.SND_ASYNC)
-    #winsound.PlaySound("son/02 One Above All.wav", winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
+    winsound.PlaySound("son/02 One Above All.wav", winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
 
     canvas = Canvas(window, bg="white", width = screenX, height = screenY)# cursor="none"
     canvas.grid(row = 0, column = 0)
@@ -276,7 +275,7 @@ def main():
     window.mainloop()
 
 
-#winsound.PlaySound("son/01 Unleashed.wav", winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
+winsound.PlaySound("son/01 Unleashed.wav", winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
 
 
 main()
