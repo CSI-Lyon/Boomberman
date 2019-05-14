@@ -2,16 +2,18 @@ import socket
 import threading
 import sys
 
-host = "192.168.0.12"
-portEnvoi = 12345
-portReception = 12346
-connEnvoi = socket.socket()
-connReception = socket.socket()
-
-connEnvoi.connect((host, portEnvoi))
-connReception.connect((host, portReception))
-
 data = ""
+
+def connection(host, portEnvoi):
+    global connection1, connection2
+    portReception = portEnvoi + 1
+    connEnvoi = socket.socket()
+    connReception = socket.socket()
+
+    connection1 = connEnvoi.connect((host, portEnvoi))
+    connection2 = connReception.connect((host, portReception))
+
+    data = ""
 
 def processMessages(connReception, connEnvoi):
     while True:
@@ -21,8 +23,6 @@ def processMessages(connReception, connEnvoi):
                 connReception.close()
             print(data.decode("utf-8"))
         except:
-            connEnvoi.close()
-            connReception.close()
             print("Connection closed by")
             # Quit the thread.
             sys.exit()
@@ -37,13 +37,14 @@ def sender(connEnvoi,data):
         except:
             data = "quit"
             sys.exit()
-        #data = connReception.recv(1024)
-        #print(str(data.decode("utf-8")))
 
 
+def initialise(connEnvoi, connReception):
+    listener = threading.Thread(target=processMessages, args=(connReception, connEnvoi))
+    listener.start()
 
-listener = threading.Thread(target=processMessages, args=(connReception, connEnvoi))
-listener.start()
+    send = threading.Thread(target=sender, args=(connEnvoi,data))
+    send.start()
 
-send = threading.Thread(target=sender, args=(connEnvoi,data))
-send.start()
+connection("192.168.0.12", 12345)
+initialise(connection1, connection2)

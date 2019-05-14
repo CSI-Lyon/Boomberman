@@ -5,9 +5,9 @@ grid = []
 grid2 = []
 
 #lit la grille du fichier texte
-def load():
+def load(nom):
     global grid
-    file = open("grids/1.txt", "r")
+    file = open("grids/" + nom, "r")
     grid = file.read().split("\n")
     file.close()
 
@@ -22,9 +22,9 @@ def load():
 
     return 0
 
-def load2():
+def load2(nom):
     global grid2
-    file = open("grids/1.txt", "r")
+    file = open("grids/" + nom, "r")
     grid2 = file.read().split("\n")
     file.close()
 

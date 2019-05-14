@@ -9,7 +9,7 @@ import map
 class Player():
 
     #initialisation de la classe joueur
-    def __init__(self, ID, name, imageID, posX, posY, ennemisADetruire, canvas):
+    def __init__(self, ID, name, imageID, posX, posY, ennemisADetruire, canvas, textVieID, vie):
         self.ID = ID
         self.name = name
        
@@ -17,20 +17,138 @@ class Player():
         self.posX = posX
         self.posY = posY
 
-        self.nbBombs = 1
-        self.vie = 2
+        self.vie = vie
         self.ennemisADetruire = ennemisADetruire
         self.canvas = canvas
+        self.textVieID = textVieID
 
     #Si on perd une vie
-    def pertVie(self):
+    def perdVie(self):
         global gameOver
         self.vie-=1
         print("vie",self.vie)
+        if self.vie >= 0:
+            self.canvas.itemconfig(self.textVieID, text = str(self.vie))
         #si 0 vie alors on a perdu
         if self.vie == 0:
             gameOver = PhotoImage(file = "images/decor/game over.png")
             self.canvas.create_image(750, 400, image = gameOver)
+            self.canvas.delete(self.IDimage)
+
+    def move(self, key):
+        global imgJ1, imgJ2
+
+        case = -1
+        if self.ID == 1:
+            imgJ1 = PhotoImage (file = "images/skins/1/down.png")
+            self.canvas.itemconfig(self.IDimage, image = imgJ1)
+        elif self.ID == 2:
+            imgJ2 = PhotoImage (file = "images/skins/2/down.png")
+            self.canvas.itemconfig(self.IDimage, image = imgJ2)
+
+        #si l'utilisateur appuie sur la touche de haut
+        if key == "Up" and self.posY >= 1:
+            case = map.get2(self.posX, self.posY-1)
+            if int(case) == 0 or int(case) == 50:
+                #s'il y a un fantome (ennemi), alors il perd une vie
+                if int(case) == 50:
+                    self.vie-=1
+
+                if self.ID == 1:
+                    imgJ1 = PhotoImage (file = "images/skins/1/up.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ1)
+                elif self.ID == 2:
+                    imgJ2 = PhotoImage (file = "images/skins/2/up.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ2)
+                #on le fait bouger
+                self.canvas.move(self.IDimage, 0, -35)
+                self.posY -= 1
+                #on remplace les bons ID pour chaque case
+                if self.ID == 1:
+                    if map.get2(self.posX, self.posY+1) == 10:
+                        map.set2(self.posX, self.posY+1, 0)
+                    map.set2(self.posX, self.posY, 10)
+                elif self.ID == 2:
+                    if map.get2(self.posX, self.posY+1) == 20:
+                        map.set2(self.posX, self.posY+1, 0)
+                    map.set2(self.posX, self.posY, 20)
+
+        #
+        #   Pour bas, droite et gauche, męme fonctinonement que celui de la touche en haut
+        #
+        
+        elif key == "Down" and self.posY <= 9:
+            case = map.get2(self.posX, self.posY+1)
+            if int(case) == 0 or int(case) == 50:
+                if int(case) == 50:
+                    self.vie-=1
+                    
+                if self.ID == 1:
+                    imgJ1 = PhotoImage (file = "images/skins/1/down.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ1)
+                elif self.ID == 2:
+                    imgJ2 = PhotoImage (file = "images/skins/2/down.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ2)
+
+                self.canvas.move(self.IDimage, 0, +35)
+                self.posY += 1
+                if self.ID == 1:
+                    if map.get2(self.posX, self.posY-1) == 10:
+                        map.set2(self.posX, self.posY-1, 0)
+                    map.set2(self.posX, self.posY, 10)
+                elif self.ID == 2:
+                    if map.get2(self.posX, self.posY-1) == 20:
+                        map.set2(self.posX, self.posY-1, 0)
+                    map.set2(self.posX, self.posY, 20)
+            
+        elif key == "Right" and self.posX <= 17:
+            case = map.get2(self.posX+1, self.posY)
+            if int(case) == 0 or int(case) == 50:
+                if int(case) == 50:
+                    self.vie-=1
+                    
+                if self.ID == 1:
+                    imgJ1 = PhotoImage (file = "images/skins/1/right.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ1)
+                elif self.ID == 2:
+                    imgJ2 = PhotoImage (file = "images/skins/2/right.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ2)
+
+                self.canvas.move(self.IDimage, +35, 0)
+                self.posX += 1
+                if self.ID == 1:
+                    if map.get2(self.posX-1, self.posY) == 10:
+                        map.set2(self.posX-1, self.posY, 0)
+                    map.set2(self.posX, self.posY, 10)
+                elif self.ID == 2:
+                    if map.get2(self.posX-1, self.posY) == 20:
+                        map.set2(self.posX-1, self.posY, 0)
+                    map.set2(self.posX, self.posY, 20)
+        
+        elif key == "Left" and self.posX >= 1:
+            case = map.get2(self.posX-1, self.posY)
+            if int(case) == 0 or int(case) == 50:
+                if int(case) == 50:
+                    self.vie-=1
+                    
+                if self.ID == 1:
+                    imgJ1 = PhotoImage (file = "images/skins/1/left.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ1)
+                elif self.ID == 2:
+                    imgJ2 = PhotoImage (file = "images/skins/2/left.png")
+                    self.canvas.itemconfig(self.IDimage, image = imgJ2)
+
+                self.canvas.move(self.IDimage, -35, 0)
+                self.posX -= 1
+                if self.ID == 1:
+                    if map.get2(self.posX+1, self.posY) == 10:
+                        map.set2(self.posX+1, self.posY, 0)
+                    map.set2(self.posX, self.posY, 10)
+                elif self.ID == 2:
+                    print(self.posX+1, self.posY)
+                    if map.get2(self.posX+1, self.posY) == 20:
+                        map.set2(self.posX+1, self.posY, 0)
+                    map.set2(self.posX, self.posY, 20)
 
 
 class Ennemi(Thread):
@@ -56,7 +174,6 @@ class Ennemi(Thread):
 
     #ennemie se deplacant ŕ droite
     def droite(self, g):
-        #pdb.set_trace()
         
         #tant que l'ennemi peut avancer
         while self.posX < 18 and (int(map.get2(self.posX+1, self.posY)) == 50 \
@@ -64,18 +181,15 @@ class Ennemi(Thread):
               or int(map.get2(self.posX+1, self.posY)) == 10\
               or int(map.get2(self.posX+1, self.posY)) == 7):
 
-            print("ghost", map.get2(self.posX+1, self.posY), self.posX+1, self.posY)
-
+            
             #si c'est une zone oů il y a un joueur, alors le joueur perd une vie
             if int(map.get2(self.posX+1, self.posY)) == 10:
-                self.player.pertVie()
+                self.player.perdVie()
 
             if int(map.get2(self.posX+1, self.posY)) == 7:
                 self.alive = False
                 self.dele()
                 return 0
-
-            print("bomba", int(map.get2(6, 2)))
 
             #si le joueur a perdu, alors on detruit l'ennemie
             if self.player.vie == 0:
@@ -83,16 +197,6 @@ class Ennemi(Thread):
                 self.dele()
                 return 0
                     
-            #try:
-                #si la case suivante est une bombe, alors l'ennemie meurt
-            #    caseSuivante = int(map.get2(self.posX+2, self.posY))
-            #    if caseSuivante == 7:
-            #        self.alive = False
-            #except:
-            #    pass
-
-            #print("droite bouge")
-
             #si l'ennemie n'est pas sorti de la grille, alors il va avancer vers la droite
             if self.posX < 18:
                 self.posX+=1
@@ -121,29 +225,18 @@ class Ennemi(Thread):
 
             #si c'est une zone oů il y a un joueur, alors le joueur perd une vie
             if int(map.get2(self.posX-1, self.posY)) == 10:
-                self.player.pertVie()
+                self.player.perdVie()
 
             if int(map.get2(self.posX-1, self.posY)) == 7:
                 self.alive = False
                 self.dele()
                 return 0
 
-            #print("enne", int(map.get2(self.posX+1, self.posY)))
-
             #si le joueur a perdu, alors on detruit l'ennemie
             if self.player.vie == 0:
                 self.alive = False
                 self.dele()
                     
-            #try:
-            #    #si la case suivante est une bombe, alors l'ennemie meurt
-            #    caseSuivante = int(map.get2(self.posX-2, self.posY))
-            #    print("case suiv", caseSuivante)
-            #    if caseSuivante == 7:
-            #        self.alive = False
-            #except:
-            #    pass
-
 
             #si l'ennemie n'est pas sorti de la grille, alors il va avancer
             if self.posX > 1:
